@@ -1,158 +1,54 @@
-"""
-Projeto: Algoritmos de Criptografia, Hashing e Segurança Digital em Python
-Descrição: Estudo prático cobrindo Cifra de Substituição, Funções Hash,
-           Ataques de Dicionário (Senhas Comuns) e Ataques de Força Bruta Exaustivos.
-"""
+# 🔐 Estudo Prático de Criptografia, Hashing e Segurança Digital
 
-import itertools
+Este repositório reúne conceitos fundamentais de **Criptografia por Substituição**, **Funções Hash Unidirecionais** e simulações práticas de **Ataques de Força Bruta** (por dicionário e exaustivo) desenvolvidos em Python.
 
-# =====================================================================
-# MÓDULO 1: CIFRA DE SUBSTITUIÇÃO (REVERSÍVEL)
-# =====================================================================
+---
 
-DICIONARIO_QWERTY = "qwertyuiopasdfghjklzxcvbnm"
+## 📌 Conteúdo do Projeto
 
-def codifica_substituicao(senha: str) -> str:
-    """
-    Criptografa uma senha substituindo caracteres minúsculos ('a'-'z')
-    pelo seu correspondente no dicionário QWERTY baseando-se no índice ASCII (0 a 25).
-    """
-    senha_criptografada = ""
-    for letra in senha:
-        if "a" <= letra <= "z":
-            # Calcula a posição relativa no alfabeto (0 a 25)
-            posicao = ord(letra) - ord("a")
-            senha_criptografada += DICIONARIO_QWERTY[posicao]
-        else:
-            senha_criptografada += letra
-            
-    return senha_criptografada
+### 1. Cifra de Substituição (`codifica_substituicao`)
+* Mapeia letras minúsculas (`a`-`z`) utilizando seus valores ASCII convertidos para índices de `0` a `25` (`ord(letra) - ord("a")`).
+* Subtitui os caracteres por uma chave customizada baseada no layout QWERTY.
 
+### 2. Função Hash (`calcula_hash`)
+* Converte um texto de entrada em um valor numérico através da soma dos códigos ASCII de seus caracteres.
+* Apresenta o conceito de irreversibilidade em funções de hash.
 
-# =====================================================================
-# MÓDULO 2: FUNÇÃO HASH (UNIDIRECIONAL)
-# =====================================================================
+### 3. Ataque por Dicionário (`simula_ataque_dicionario`)
+* Simula a validação de um hash cadastrado contra uma lista de **senhas populares e vazadas** (`SENHAS_COMUNS`).
+* Utiliza a biblioteca `itertools.product` para demonstrar como computadores conseguem identificar senhas fracas instantaneamente.
 
-def calcula_hash(senha: str) -> int:
-    """
-    Gera um valor numérico inteiro (Hash) a partir da soma dos códigos ASCII
-    de cada caractere presente na senha.
-    """
-    valor_hash = 0
-    for letra in senha:
-        valor_hash += ord(letra)
-    return valor_hash
+### 4. Ataque de Força Bruta Completo (`simula_forca_bruta_completa`)
+* Demonstra como quebrar senhas que não estão em dicionários, testando **todas as combinações possíveis de caracteres**.
+* Utiliza `itertools.product(..., repeat=tamanho)` e concatenação com `"".join()`.
+* Evidencia o **crescimento exponencial** do tempo de processamento conforme o tamanho da senha aumenta.
 
+---
 
-# =====================================================================
-# MÓDULO 3: ATAQUE POR DICIONÁRIO (SENHAS COMUNS/VAZADAS)
-# =====================================================================
+## 🛠️ Tecnologias e Bibliotecas Utilizadas
 
-# Lista de senhas populares / vazadas frequentemente testadas em ataques
-SENHAS_COMUNS = [
-    "123456",
-    "password",
-    "123456789",
-    "qwerty",
-    "12345678",
-    "111111",
-    "12345",
-    "columbia",
-    "senha",
-    "iloveyou"
-]
+* **Linguagem:** Python 3
+* **Módulo Nativo:** `itertools` (para análise combinatória e produto cartesiano)
+* **Conceitos:** Tabela ASCII, Funções Hash, Análise Combinatória, Estruturas de Repetição.
 
-def simula_ataque_dicionario(hash_alvo: int) -> bool:
-    """
-    Simula um ataque testando o hash cadastrado contra os hashes de uma 
-    lista de senhas populares utilizando a análise combinatória do itertools.
-    """
-    # 1. Gera a lista de hashes das senhas comuns
-    hashes_comuns = []
-    for senha in SENHAS_COMUNS:
-        hashes_comuns.append(calcula_hash(senha))
+---
 
-    # 2. Cria pares de comparação com itertools.product
-    combinacoes = list(itertools.product([hash_alvo], hashes_comuns))
+## 💡 Lições de Segurança Digital
 
-    # 3. Compara o hash da senha cadastrada com cada hash comum
-    for hash_cadastrado, hash_teste in combinacoes:
-        if hash_cadastrado == hash_teste:
-            # Encontra a senha correspondente na lista
-            indice = hashes_comuns.index(hash_teste)
-            senha_encontrada = SENHAS_COMUNS[indice]
-            print(f"[!] SUCESSO (Dicionário): Senha comum encontrada! -> '{senha_encontrada}' (Hash: {hash_teste})")
-            return True
+1. **Evite senhas comuns e vazadas:** Senhas como `"123456"` ou `"password"` são descobertas em milissegundos por ataques de dicionário.
+2. **Priorize o comprimento da senha:** Quanto mais caracteres a senha tiver, exponencialmente maior será a quantidade de combinações necessárias, tornando inviável o ataque por força bruta.
+3. **Não reutilize senhas:** Caso uma senha vazará em um serviço, ela será testada automaticamente em outros sistemas.
 
-    print("[-] FALHA (Dicionário): A senha não faz parte da lista de senhas comuns.")
-    return False
+---
 
+## 🚀 Como Executar
 
-# =====================================================================
-# MÓDULO 4: ATAQUE DE FORÇA BRUTA COMPLETO (EXAUSTIVO)
-# =====================================================================
+```bash
+# Clone o repositório
+git clone [https://github.com/seu-usuario/criptografia-python.git](https://github.com/seu-usuario/criptografia-python.git)
 
-def simula_forca_bruta_completa(hash_alvo: int, tamanho_max: int, dicionario_caracteres: str) -> bool:
-    """
-    Testa TODAS as combinações possíveis de caracteres de um determinado tamanho
-    usando itertools.product com o argumento repeat.
-    """
-    print(f"[*] Iniciando Força Bruta Completa (Tamanho: {tamanho_max} caracteres)...")
-    
-    # Gera todas as combinações de tamanho 'tamanho_max'
-    for combinacao in itertools.product(dicionario_caracteres, repeat=tamanho_max):
-        # Converte a tupla de caracteres em string para calcular o hash
-        tentativa_texto = "".join(combinacao)
-        
-        if calcula_hash(tentativa_texto) == hash_alvo:
-            print(f"[!] SUCESSO (Força Bruta): Senha quebrada! -> '{tentativa_texto}' (Hash: {hash_alvo})")
-            return True
+# Acesse a pasta
+cd criptografia-python
 
-    print("[-] FALHA (Força Bruta): Nenhuma combinação correspondeu ao hash alvo.")
-    return False
-
-
-# =====================================================================
-# EXECUÇÃO E DEMONSTRAÇÃO GERAL DO PROJETO
-# =====================================================================
-
-def main():
-    print("=========================================================")
-    print("      DEMONSTRAÇÃO DE SEGURANÇA DIGITAL E SEGURANÇA      ")
-    print("=========================================================\n")
-
-    # --- 1. Cifra de Substituição ---
-    print("--- 1. Cifra de Substituição ---")
-    senha_exemplo = "marcelo"
-    print(f"Original: {senha_exemplo} | Cifrada: {codifica_substituicao(senha_exemplo)}\n")
-
-    # --- 2. Função Hash ---
-    print("--- 2. Função Hash ASCII ---")
-    hash_exemplo = calcula_hash(senha_exemplo)
-    print(f"Senha: {senha_exemplo} | Hash Calculado: {hash_exemplo}\n")
-
-    # --- 3. Ataque por Dicionário ---
-    print("--- 3. Simulação de Ataque por Dicionário (Senhas Comuns) ---")
-    senha_fraca = "123456"
-    hash_fraco = calcula_hash(senha_fraca)
-    print(f"Testando a senha vulnerável '{senha_fraca}'...")
-    simula_ataque_dicionario(hash_fraco)
-    print()
-
-    # --- 4. Ataque de Força Bruta Completo ---
-    print("--- 4. Simulação de Ataque de Força Bruta Completo ---")
-    senha_alvo = "mar"
-    hash_alvo = calcula_hash(senha_alvo)
-    
-    # Conjunto de caracteres a serem testados
-    dicionario_caracteres = "abcdefghijklmnopqrstuvwxyzABC123!@#$"
-    
-    print(f"Alvo: Senha de {len(senha_alvo)} caracteres ('{senha_alvo}')")
-    simula_forca_bruta_completa(
-        hash_alvo=hash_alvo, 
-        tamanho_max=len(senha_alvo), 
-        dicionario_caracteres=dicionario_caracteres
-    )
-
-if __name__ == "__main__":
-    main()
+# Executa o projeto
+python main.py
