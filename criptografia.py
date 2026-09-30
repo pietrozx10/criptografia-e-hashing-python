@@ -1,54 +1,75 @@
-# 🔐 Estudo Prático de Criptografia, Hashing e Segurança Digital
+from cryptography.fernet import Fernet
 
-Este repositório reúne conceitos fundamentais de **Criptografia por Substituição**, **Funções Hash Unidirecionais** e simulações práticas de **Ataques de Força Bruta** (por dicionário e exaustivo) desenvolvidos em Python.
+def gerar_chave():
+"""Gera uma nova chave de criptografia."""
+return Fernet.generate_key()
 
----
+def criptografar(mensagem, chave):
+"""Criptografa uma mensagem usando a chave fornecida."""
+fernet = Fernet(chave)
+mensagem_criptografada = fernet.encrypt(mensagem.encode())
+return mensagem_criptografada
 
-## 📌 Conteúdo do Projeto
+def descriptografar(mensagem, chave):
+"""Descriptografa uma mensagem usando a chave fornecida."""
+fernet = Fernet(chave)
+mensagem_original = fernet.decrypt(mensagem).decode()
+return mensagem_original
 
-### 1. Cifra de Substituição (`codifica_substituicao`)
-* Mapeia letras minúsculas (`a`-`z`) utilizando seus valores ASCII convertidos para índices de `0` a `25` (`ord(letra) - ord("a")`).
-* Subtitui os caracteres por uma chave customizada baseada no layout QWERTY.
+def main():
+print("=== PROGRAMA DE CRIPTOGRAFIA ===")
+print("1 - Criptografar mensagem")
+print("2 - Descriptografar mensagem")
+print("3 - Sair")
 
-### 2. Função Hash (`calcula_hash`)
-* Converte um texto de entrada em um valor numérico através da soma dos códigos ASCII de seus caracteres.
-* Apresenta o conceito de irreversibilidade em funções de hash.
+chave = gerar_chave()
 
-### 3. Ataque por Dicionário (`simula_ataque_dicionario`)
-* Simula a validação de um hash cadastrado contra uma lista de **senhas populares e vazadas** (`SENHAS_COMUNS`).
-* Utiliza a biblioteca `itertools.product` para demonstrar como computadores conseguem identificar senhas fracas instantaneamente.
+while True:
+    opcao = input("\nEscolha uma opção: ")
 
-### 4. Ataque de Força Bruta Completo (`simula_forca_bruta_completa`)
-* Demonstra como quebrar senhas que não estão em dicionários, testando **todas as combinações possíveis de caracteres**.
-* Utiliza `itertools.product(..., repeat=tamanho)` e concatenação com `"".join()`.
-* Evidencia o **crescimento exponencial** do tempo de processamento conforme o tamanho da senha aumenta.
+    if opcao == "1":
+        mensagem = input("Digite a mensagem: ")
 
----
+        mensagem_criptografada = criptografar(
+            mensagem,
+            chave
+        )
 
-## 🛠️ Tecnologias e Bibliotecas Utilizadas
+        print("\nMensagem criptografada:")
+        print(mensagem_criptografada.decode())
 
-* **Linguagem:** Python 3
-* **Módulo Nativo:** `itertools` (para análise combinatória e produto cartesiano)
-* **Conceitos:** Tabela ASCII, Funções Hash, Análise Combinatória, Estruturas de Repetição.
+        print("\nChave utilizada:")
+        print(chave.decode())
 
----
+    elif opcao == "2":
+        mensagem = input(
+            "Cole a mensagem criptografada: "
+        )
 
-## 💡 Lições de Segurança Digital
+        chave_usuario = input(
+            "Digite a chave de descriptografia: "
+        )
 
-1. **Evite senhas comuns e vazadas:** Senhas como `"123456"` ou `"password"` são descobertas em milissegundos por ataques de dicionário.
-2. **Priorize o comprimento da senha:** Quanto mais caracteres a senha tiver, exponencialmente maior será a quantidade de combinações necessárias, tornando inviável o ataque por força bruta.
-3. **Não reutilize senhas:** Caso uma senha vazará em um serviço, ela será testada automaticamente em outros sistemas.
+        try:
+            mensagem_original = descriptografar(
+                mensagem.encode(),
+                chave_usuario.encode()
+            )
 
----
+            print("\nMensagem original:")
+            print(mensagem_original)
 
-## 🚀 Como Executar
+        except Exception:
+            print(
+                "\nErro: mensagem ou chave inválida."
+            )
 
-```bash
-# Clone o repositório
-git clone [https://github.com/seu-usuario/criptografia-python.git](https://github.com/seu-usuario/criptografia-python.git)
+    elif opcao == "3":
+        print("Programa encerrado.")
+        break
 
-# Acesse a pasta
-cd criptografia-python
+    else:
+        print("Opção inválida. Escolha 1, 2 ou 3.")
 
-# Executa o projeto
-python main.py
+if name == "main":
+main()
